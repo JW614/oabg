@@ -1,0 +1,246 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>无标题文档</title>
+    <link href="../../static/css/style.css" rel="stylesheet" type="text/css"/>
+    <link href="../../static/css/select.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="../../static/js/jquery.js"></script>
+    <script type="text/javascript" src="../../static/My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript" src="../../static/js/jquery.idTabs.min.js"></script>
+    <script type="text/javascript" src="../../static/js/select-ui.min.js"></script>
+    <script type="text/javascript" src="../../static/editor/kindeditor.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function (e) {
+            $(".select1").uedSelect({
+                width: 200
+            });
+
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".click").click(function () {
+                $(".tip").fadeIn(200);
+            });
+
+            $(".tiptop a").click(function () {
+                $(".tip").fadeOut(200);
+            });
+
+            $(".sure").click(function () {
+                $(".tip").fadeOut(100);
+            });
+
+            $(".cancel").click(function () {
+                $(".tip").fadeOut(100);
+            });
+
+        });
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            //通过Ajax请求获取部门列表并（通过回调函数）填充到指定位置
+            $.ajax({
+                type: "post",
+                url: "/DutyController/findDepts",
+                dataType: "text",
+                success: function (result) {
+                    eval("var arr =" + result);
+                    var str = "<option value='0'>所有部门</option>";
+                    //alert(arr);
+                    for (var i = 0; i < arr.length; i++) {
+                        str += '<option value="' + arr[i].deptno + '">' + arr[i].deptname + '</option>';
+                        $("#deptno").html(str);
+                    }
+                },
+                error: function (xhr) {
+                    alert(xhr.status);
+                }
+            });
+        });
+
+        //获取考勤列表
+        function showDuty(currnav) {
+            //获取查询条件
+            var empId = $("#empId").val();
+            var deptno = $("#deptno").val();
+            var dtDate = $("#dtDate").val();
+            //通过Ajax获取符合条件的考勤信息并显示
+            //alert(empId+" "+deptno+" "+dtDate);
+            $.ajax({
+                type: "post",
+                url: "/DutyController/find",
+                dataType: "text",
+                data: {"currnav":currnav,"empId": empId, "deptno": deptno, dtDate: dtDate},
+                success: function (result) {
+                    //alert(result);
+                    //json str-----json obj
+                    eval("var arr = " + result);
+                    //拼接HTML字符串
+                    var str = "";
+                    var str2 = "";
+                    var str3 = "";
+                    var str4 = "";
+                    for (var i = 0; i < arr.dutyList.length; i++) {
+                        str += '<tr>'
+                            + '<td>'
+                            + '<input name="" type="checkbox" value="" />'
+                            + '</td>'
+                            + '<td>' + arr.dutyList[i].emp.empid + '</td>'
+                            + '<td>' + arr.dutyList[i].emp.realName + '</td>'
+                            + '<td>' + arr.dutyList[i].emp.dept.deptname + '</td>'
+                            + '<td>' + arr.dutyList[i].dtdate + '</td>'
+                            + '<td>' + arr.dutyList[i].signintime + '</td>'
+                            + '<td>' + arr.dutyList[i].signouttime + '</td>'
+                            + '<td>' + arr.dutyList[i].incity + '</td>'
+                            + '<td>' + arr.dutyList[i].outcity + '</td>'
+                            + '</tr>';
+                    }
+                    if(currnav==1){
+                        str3 = '<li class="paginItem"><span class="pagepre"></span></li>';
+                    }else{
+                        str3 = '<li class="paginItem"><a href="javascript:showDuty('+arr.pageUtil.prev+');"><span class="pagepre"></span></a></li>';
+                    }
+                    for (var i = arr.pageUtil.begin;i<=arr.pageUtil.end;i++){
+                        if(currnav==i){
+                            str2+='<li class="paginItem current">'
+                                +'<a href="javascript:showDuty('+i+');"><span style="color:#76AED4;">'+i+'</span></a>'
+                                +'</li>';
+                        }else{
+                            str2+='<li class="paginItem current">'
+                                +'<a href="javascript:showDuty('+i+');">'+i+'</a>'
+                                +'</li>';
+                        }
+                    }
+                    if(arr.pageUtil.end==currnav){
+                        str4 = '<li class="paginItem"><span class="pagenxt"></span></li>';
+                    }else{
+                        str4 = '<li class="paginItem"><a href="javascript:showDuty('+arr.pageUtil.next+');"><span class="pagenxt"></span></a></li>';
+                    }
+                    var str5 = str3+str2+str4;
+                    //写入指定位置
+                    $("#tbody1").html(str);
+                    $("#ye").html(str5);
+                    $("#count").html(arr.pageUtil.rowcount);
+                    $("#dq").html(arr.pageUtil.currnav);
+                },
+                error: function (xhr) {
+                    alert(xhr.status);
+                }
+            });
+        }
+
+        function exportXls() {
+            //获取查询条件
+            var empId = $("#empId").val();
+            var deptno = $("#deptno").val();
+            var dtDate = $("#dtDate").val();
+            //因为到处xls是直接返回流，所以导出xls不使用Ajax请求（Ajax是使用回调函数返回结果），也不使用转发和重定向
+            location.href = "/DutyController/exportXls?empId=" + empId + "&deptno=" + deptno + "&dtDate=" + dtDate;
+        }
+    </script>
+</head>
+
+<body>
+
+<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+        <li><a href="#">考勤管理</a></li>
+        <li><a href="#">考勤管理</a></li>
+    </ul>
+</div>
+
+<div class="rightinfo">
+
+    <ul class="prosearch">
+        <li>
+            <label>查询：</label><i>用户名</i>
+            <a>
+                <input name="empId" id="empId" type="text" class="scinput"/>
+            </a><i>所属部门</i>
+            <a>
+                <select class="select1" id="deptno" name="deptno">
+
+                </select>
+            </a>
+            <i>考勤时间</i>
+            <a>
+                <input name="dtDate" id="dtDate" type="text" class="scinput"
+                       onfocus="WdatePicker({skin:'whyGreen',lang:'en'})"/>
+            </a>
+            <a>
+                <input name="" type="button" class="sure" value="查询" onclick="showDuty(1)"/>
+
+            </a>
+            <a>
+                <input name="" type="button" class="scbtn2" value="导出" onclick="exportXls()"/>
+
+            </a>
+
+        </li>
+
+
+    </ul>
+
+    <div class="formtitle1"><span>考勤管理</span></div>
+
+    <table class="tablelist">
+        <thead>
+        <tr>
+            <th>
+                <input name="" type="checkbox" value="" checked="checked"/>
+            </th>
+            <th>用户名<i class="sort"><img src="../../static/images/px.gif"/></i></th>
+            <th>真实姓名</th>
+            <th>所属部门</th>
+            <th>出勤日期</th>
+            <th>签到时间</th>
+            <th>签退时间</th>
+            <th>签到城市</th>
+            <th>签退城市</th>
+        </tr>
+        </thead>
+        <tbody id="tbody1">
+
+
+        </tbody>
+    </table>
+
+    <div class="pagin">
+        <div class="message">共<i class="blue" id="count"></i>条记录，当前显示第&nbsp;<i class="blue" id="dq">&nbsp;</i>页</div>
+        <ul class="paginList" id="ye">
+
+        </ul>
+    </div>
+
+    <div class="tip">
+        <div class="tiptop"><span>提示信息</span>
+            <a></a>
+        </div>
+
+        <div class="tipinfo">
+            <span><img src="../../static/images/ticon.png"/></span>
+            <div class="tipright">
+                <p>是否确认对信息的修改 ？</p>
+                <cite>如果是请点击确定按钮 ，否则请点取消。</cite>
+            </div>
+        </div>
+
+        <div class="tipbtn">
+            <input name="" type="button" class="sure" value="确定"/>&nbsp;
+            <input name="" type="button" class="cancel" value="取消"/>
+        </div>
+
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    $('.tablelist tbody tr:odd').addClass('odd');
+</script>
+
+</body>
+

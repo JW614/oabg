@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Title</title>
+    <script type="text/javascript" src="../../static/js/jquery.js"></script>
+    <script type="text/javascript" src="../../static/js/jquery.idTabs.min.js"></script>
+    <script type="text/javascript" src="../../static/js/select-ui.min.js"></script>
+    <script type="text/javascript" src="../../static/editor/kindeditor.js"></script>
+    <script type="text/javascript" src="../../static/js/echarts.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            changePie("0");
+        });
+        function changePie(time){
+            $.ajax({
+                url:"/InOutController/getPieData",
+                data:{time2:time},
+                success:function(data){
+                    //json str --- json obj
+                    eval("var arr = "+data);
+                    //初始化对象
+                    var dom = document.getElementById("container");
+                    var myChart = echarts.init(dom);
+                    //准备数据
+                    var option = {
+                        title: {
+                            text: '支出统计',
+                            subtext: '报销统计',
+                            left: 'center'
+                        },
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: '{a} <br/>{b} : {c} ({d}%)'
+                        },
+                        legend: {
+                            orient: 'vertical',
+                            left: 'left',
+                            data: ['通信费用','办公室耗材','住宿费用','房租水电','其他']
+                        },
+                        series : [
+                            {
+                                name: '访问来源',
+                                type: 'pie',
+                                radius: '55%',
+                                center: ['50%', '60%'],
+                                data:arr,
+                                emphasis: {
+                                    itemStyle: {
+                                        shadowBlur: 10,
+                                        shadowOffsetX: 0,
+                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                    }
+                                }
+                            }
+                        ]
+                    };
+                    if (option && typeof option === "object") {
+                        myChart.setOption(option, true);
+                    }
+                }
+            });
+        }
+    </script>
+</head>
+
+<body style="height: 100%; margin: 0;">
+<div style="height: 20%; width: 500px;  margin:0px auto;">
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    请选择支出时间段：
+    <select class="select1" id="select1" onchange="changePie(this.value)">
+        <option value="0">全部</option>
+        <option value="1">当月</option>
+        <option value="2">去年</option>
+        <option value="3">今年至今</option>
+        <option value="4">今年到上月</option>
+    </select>
+</div>
+<div id="container" style="height: 500px"></div>
+
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>无标题文档</title>
+    <link href="../../static/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="../../static/css/select.css" rel="stylesheet" type="text/css" />
+
+    <script type="text/javascript" src="../../static/js/jquery.js"></script>
+
+    <script type="text/javascript" src="../../static/js/jquery.idTabs.min.js"></script>
+    <script type="text/javascript" src="../../static/js/select-ui.min.js"></script>
+    <script type="text/javascript" src="../../static/editor/kindeditor.js"></script>
+    <script type="text/javascript" src="../../static/My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(e) {
+            $(".select1").uedSelect({
+                width : 150
+            });
+
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(".click").click(function(){
+                $(".tip").fadeIn(200);
+            });
+
+            $(".tiptop a").click(function(){
+                $(".tip").fadeOut(200);
+            });
+
+            $(".sure").click(function(){
+                $(".tip").fadeOut(100);
+            });
+
+            $(".cancel").click(function(){
+                $(".tip").fadeOut(100);
+            });
+
+        });
+        function toVaild() {
+            var a = /^(\d{1,4})(-|\/)(\d{1,2})\2(\d{1,2})$/;
+            if($("#startTime").val() != '' && $("#startTime").val() != null){
+                if(!a.test($("#startTime").val())){
+                    alert("日期格式不正确");
+                    return false;
+                }
+            }
+            if($("#endTime").val() != '' && $("#endTime").val() != null){
+                if(!a.test($("#endTime").val())){
+                    alert("日期格式不正确");
+                    return false;
+                }
+            }
+        }
+    </script>
+
+
+</head>
+
+<body>
+
+<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+        <li><a href="#">收支管理</a></li>
+        <li><a href="#">查看支出</a></li>
+    </ul>
+</div>
+
+<div class="rightinfo">
+    <form action="/InOutController/findPay" method="post" onsubmit="return toVaild()">
+        <ul class="prosearch">
+            <li>
+                <label>查询：</label>
+                <i>起始登记时间</i>
+                <a>
+                    <input id="startTime" name="startTime" type="text" class="scinput" th:value="${startTime }" onfocus="WdatePicker({skin:'whyGreen',lang:'en'})"/>
+                </a>
+                <i>结束登记时间</i>
+                <a>
+                    <input id="endTime" name="endTime" type="text" class="scinput" th:value="${endTime }" onfocus="WdatePicker({skin:'whyGreen',lang:'en'})"/>
+                </a>
+                <i>支出人</i>
+                <a>
+                    <input name="userName" type="text" th:value="${userName }" class="scinput" />
+                </a>
+
+            </li>
+        </ul>
+        <ul class="prosearch">
+            <li>
+
+                <i>收入类型</i>
+                <a>
+                    <select class="select1" name="type">
+                        <option value="" selected="selected">全部</option>
+                        <option value="1">通信费用</option>
+                        <option value="2">办公室耗材</option>
+                        <option value="3">住宿费用</option>
+                        <option value="4">房租水电</option>
+                        <option value="5">其他</option>
+                    </select>
+                </a>
+                <a>
+                    <input name="" type="submit" class="sure" value="查询" />
+                </a>
+            </li>
+        </ul>
+    </form>
+    <div class="formtitle1"><span>支出列表</span></div>
+
+    <table class="tablelist">
+        <thead>
+        <tr>
+            <th>
+                <input name="" type="checkbox" value="" checked="checked" />
+            </th>
+            <th>类型<i class="sort"><img src="../../static/images/px.gif" /></i></th>
+            <th>金额</th>
+            <th>备注</th>
+            <th>支出人</th>
+            <th>支出时间</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr th:each="pm:${pmList }">
+                <td>
+                    <input name="" type="checkbox" value="" />
+                </td>
+                <td>
+                    <span th:if="${pm.expItem.type } eq 1" th:text="${EXP_TYPE1}"></span>
+                    <span th:if="${pm.expItem.type } eq 2" th:text="${EXP_TYPE2}"></span>
+                    <span th:if="${pm.expItem.type } eq 3" th:text="${EXP_TYPE3}"></span>
+                    <span th:if="${pm.expItem.type } eq 4" th:text="${EXP_TYPE4}"></span>
+                    <span th:if="${pm.expItem.type } eq 5" th:text="${EXP_TYPE5}"></span>
+                </td>
+                <td th:text="${pm.amount }">${pm.amount }</td>
+                <td th:text="${pm.expItem.itemDesc }">${pm.expItem.itemDesc }</td>
+                <td th:text="${pm.emp.realName }">${pm.emp.realName }</td>
+                <td th:text="${pm.paytime }">${pm.paytime }</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="pagin">
+        <div class="message">共<i class="blue" th:text="${pageUtil.rowcount }">1256</i>条记录，当前显示第&nbsp;<i class="blue" th:text="${pageUtil.currnav }">2&nbsp;</i>页</div>
+        <ul class="paginList">
+            <li class="paginItem"><a th:href="@{/InOutController/findPay(currnav=${pageUtil.prev },startTime=${startTime},endTime=${endTime},userName=${userName},type=${type})}"><span class="pagepre"></span></a></li>
+            <li th:each="i: ${#numbers.sequence(pageUtil.begin,pageUtil.end)}" class="paginItem"><a th:text="${i}" th:href="@{/InOutController/findPay(currnav=${i },startTime=${startTime},endTime=${endTime},userName=${userName},type=${type})}"></a></li>
+            <li class="paginItem"><a th:href="@{/InOutController/findPay(currnav=${pageUtil.next },startTime=${startTime},endTime=${endTime},userName=${userName},type=${type})}"><span class="pagenxt"></span></a></li>
+        </ul>
+    </div>
+
+    <div class="tip">
+        <div class="tiptop"><span>提示信息</span>
+            <a></a>
+        </div>
+
+        <div class="tipinfo">
+            <span><img src="../../static/images/ticon.png" /></span>
+            <div class="tipright">
+                <p>是否确认对信息的修改 ？</p>
+                <cite>如果是请点击确定按钮 ，否则请点取消。</cite>
+            </div>
+        </div>
+
+        <div class="tipbtn">
+            <input name="" type="button" class="sure" value="确定" />&nbsp;
+            <input name="" type="button" class="cancel" value="取消" />
+        </div>
+
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    $('.tablelist tbody tr:odd').addClass('odd');
+</script>
+
+</body>
+
+</html>

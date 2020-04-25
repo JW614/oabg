@@ -1,0 +1,252 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>无标题文档</title>
+    <link href="../../static/css/style.css" rel="stylesheet" type="text/css"/>
+    <link href="../../static/css/style.css" rel="stylesheet" type="text/css"/>
+    <link href="../../static/css/select.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="../../static/js/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="../../static/js/jquery.idTabs.min.js"></script>
+    <script type="text/javascript" src="../../static/js/select-ui.min.js"></script>
+    <script type="text/javascript" src="../../static/editor/kindeditor.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function (e) {
+            $(".select1").uedSelect({
+                width: 345
+            });
+
+        });
+    </script>
+    <script type="text/javascript">
+        function addPhoto() {
+            //获取上传图片li
+            var li = $("#uploadphoto");
+            //console.info(li);
+            //准备添加的dom对象
+            var content = $("<span><label>&nbsp;</label><input onchange='chang1(this)' name='photo' type='file' class='dfinput'  multiple='multiple' accept='image/png, image/jpeg, image/gif, image/jpg'/><i></i>" +
+                "<input type='button'  class='btn'  value='删除' onclick='removeCurrSpan(this)'/></span>");
+            //加入到指定位置
+            li.append(content);
+        }
+
+        function removeCurrSpan(obj) {
+            $(obj).parent().remove();
+
+        }
+
+        function addExpenseItem(id) {
+            //获取上级标签
+            var table = $(id);
+
+            //创建当前标签
+            var content = $('<tr>' +
+                '<td><div class="vocation"><select class="select1" name="type">' +
+                '<option value="1">通信费用</option><option value="2">办公室耗材</option><option value="3">住宿费用</option><option value="4">房租水电</option>' +
+                '</select></div></td>' +
+                '<td><input name="amount" type="text" class="dfinput" /><i></i></td>' +
+                '<td><input name="itemDesc" type="text" class="dfinput" /><i></i></td>' +
+                '<td><input type="button"  class="btn"  value="删除" onclick="removeCurrItem(this)"/></td></tr>');
+
+            //加入上级标签
+            table.append(content);
+            $(".select1").uedSelect({
+                width: 345
+            });
+        }
+
+        function removeCurrItem(obj) {
+            $(obj).parent().parent().remove();
+
+        }
+        var formDate = new FormData();
+        function chang1(obj){
+            var docObj = $(obj)[0];
+
+            if(docObj.files.length == 1){
+                formDate.append("file",docObj.files[0]);
+            }else{
+                for(var i = 0; i<docObj.files.length;i++){
+                    formDate.append("file",docObj.files[i]);
+                }
+            }
+        }
+        function onload1 () {
+            $.ajax({
+                type:"post",
+                dataType:"json",
+                data: formDate,
+                cache:false,
+                url:"/ExpenseController/onload",
+                processData: false,
+                contentType:false,
+                success:function(data){
+                    if(data.success == 'ok'){
+                        $("#onloadspen").val("上传成功");
+                        $("#onloadspen").html("上传成功");
+                    }else {
+                        $("#onloadspen").html("上传失败");
+                    }
+                },
+                error:function (xhr) {
+                    alert(xhr.status);
+                }
+            })
+        };
+        function toVaild() {
+            var amount = $("input[name='amount']");
+            var itemDesc = $("input[name='itemDesc']");
+            for(var i = 0;i<amount.length;i++){
+                if(amount[i].value == '' || amount[i].value == null){
+                    $("#tablespan").html("报销项不能为空");
+                    return false;
+                }
+            }
+            $("#tablespan").html("");
+            for(var i = 0;i<itemDesc.length;i++){
+                if(itemDesc[i].value == '' || itemDesc[i].value == null){
+                    $("#tablespan").html("报销项不能为空");
+                    return false;
+                }
+            }
+            $("#tablespan").html("");
+            if($("#onloadspen").val() != "上传成功"){
+                $("#onloadspen").html("未上传报销凭证照片");
+                return false;
+            }else{
+                $("#onloadspen").html("");
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+        <li><a href="#">报销管理</a></li>
+        <li><a href="#">添加报销</a></li>
+    </ul>
+</div>
+
+<div class="formbody">
+
+    <div class="formtitle"><span>基本信息</span></div>
+    <form action="/ExpenseController/add" method="post" onsubmit="return toVaild()">
+        <ul class="forminfo">
+            <li>
+                <label>报销人</label>
+                <input name="empId" type="text" class="dfinput" readonly="readonly"
+                       th:value="${session.user.empid }"/><i></i></li>
+            <li>
+                <!--
+                    <li>
+                        <label>报销总额</label>
+                        <input name="" type="text" class="dfinput" /><i></i></li>
+                    <li>
+                        <label>报销时间</label>
+                        <input name="" type="text" class="dfinput"  value="当前时间"/><i></i></li>
+                    <li>
+                    -->
+            <li>
+                <label>具体报销项</label>
+                <input type="button" class="btn" value="添加报销项" onclick="addExpenseItem('#table1')"/><span id="tablespan" style="color: red"></span>
+                <table border="" cellspacing="" cellpadding="" width="70%" id="table1">
+                    <tr>
+                        <td>报销类型</td>
+                        <td>报销费用</td>
+                        <td>费用说明</td>
+                    </tr>
+                    <tr th:each="exp:${exp2List}">
+                        <td>
+                            <div class="vocation" th:if="${exp.type} eq 1">
+                                <select class="select1" name="type">
+                                    <option value="1" selected="selected">通信费用</option>
+                                    <option value="2">办公室耗材</option>
+                                    <option value="3">住宿费用</option>
+                                    <option value="4">房租水电</option>
+                                    <option value="5">其他</option>
+                                </select>
+                            </div>
+                            <div class="vocation" th:if="${exp.type} eq 2">
+                                <select class="select1" name="type">
+                                    <option value="1">通信费用</option>
+                                    <option value="2" selected="selected">办公室耗材</option>
+                                    <option value="3">住宿费用</option>
+                                    <option value="4">房租水电</option>
+                                    <option value="5">其他</option>
+                                </select>
+                            </div>
+                            <div class="vocation" th:if="${exp.type} eq 3">
+                                <select class="select1" name="type">
+                                    <option value="1">通信费用</option>
+                                    <option value="2">办公室耗材</option>
+                                    <option value="3" selected="selected">住宿费用</option>
+                                    <option value="4">房租水电</option>
+                                    <option value="5">其他</option>
+                                </select>
+                            </div>
+                            <div class="vocation" th:if="${exp.type} eq 4">
+                                <select class="select1" name="type">
+                                    <option value="1">通信费用</option>
+                                    <option value="2">办公室耗材</option>
+                                    <option value="3">住宿费用</option>
+                                    <option value="4" selected="selected">房租水电</option>
+                                    <option value="5">其他</option>
+                                </select>
+                            </div>
+                            <div class="vocation" th:if="${exp.type} eq 5">
+                                <select class="select1" name="type">
+                                    <option value="1">通信费用</option>
+                                    <option value="2">办公室耗材</option>
+                                    <option value="3">住宿费用</option>
+                                    <option value="4">房租水电</option>
+                                    <option value="5" selected="selected">其他</option>
+                                </select>
+                            </div>
+                        </td>
+                        <td><input th:value="${exp.amoumt}" name="amount" type="text" class="dfinput"/><i></i></td>
+                        <td><input th:value="${exp.itemDesc}" name="itemDesc" type="text" class="dfinput"/><i></i></td>
+                    </tr>
+                </table>
+            </li>
+            <li>
+
+            </li>
+            <li id="uploadphoto">
+                <label>上传报销图片</label>
+                <span>
+                    <p style="color: red">请先上传，图片不要超过4M，最多上传10张</p>
+                    <input onchange="chang1(this)" name="photo" type="file" class="dfinput" multiple="multiple" accept="image/png, image/jpeg, image/gif, image/jpg"/><i></i>
+                    <input type="button" class="btn" value="添加图片" onclick="addPhoto()"/>
+                </span>
+            </li>
+            <li>
+                <input name="" type="button" onclick="onload1()" id="bbt" class="btn" value="上传"/>
+                <spen style="color: red" id="onloadspen"></spen>
+            </li>
+            <li>
+                <label>审批人<b>*</b></label>
+                <input name="nextAuditor" type="text" class="dfinput" readonly="readonly"
+                       th:value="${session.user.mgr.empid }"/>
+            </li>
+            </li>
+            <li>
+                <label>总备注信息</label>
+                <textarea name="expDesc" cols="" rows="" class="textinput"></textarea>
+            </li>
+            <li>
+                <label>&nbsp;</label>
+                <input name="" type="submit" class="btn" value="确认保存"/>
+            </li>
+            <li>
+                <p th:text="${error}"></p>
+            </li>
+        </ul>
+    </form>
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>无标题文档</title>
+    <link href="../../static/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="../../static/css/select.css" rel="stylesheet" type="text/css" />
+
+    <script type="text/javascript" src="../../static/js/jquery.js"></script>
+
+    <script type="text/javascript" src="../../static/js/jquery.idTabs.min.js"></script>
+    <script type="text/javascript" src="../../static/js/select-ui.min.js"></script>
+    <script type="text/javascript" src="../../static/editor/kindeditor.js"></script>
+    <script type="text/javascript" src="../../static/My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(e) {
+            $(".select1").uedSelect({
+                width : 200
+            });
+
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(".click").click(function(){
+                $(".tip").fadeIn(200);
+            });
+
+            $(".tiptop a").click(function(){
+                $(".tip").fadeOut(200);
+            });
+
+            $(".sure").click(function(){
+                $(".tip").fadeOut(100);
+            });
+
+            $(".cancel").click(function(){
+                $(".tip").fadeOut(100);
+            });
+
+        });
+        //获取收入列表
+        function showIncome(currnav){
+            //获取查询条件
+            var startTime = $("#startTime").val();
+            var endTime = $("#endTime").val();
+            var icType = $("#icType").val();
+            //通过Ajax获取符合条件的收入信息并显示
+            //alert(empId+" "+deptno+" "+dtDate);
+            $.ajax({
+                type:"post",
+                url:"/InOutController/find",
+                dataType:"text",
+                data:{"currnav":currnav,"startTime":startTime,"endTime":endTime,"icType":icType},
+                success:function(result){
+                    //alert(result);
+                    //json str-----json obj
+                    eval("var arr = "+result);
+                    //拼接HTML字符串
+                    var str = "";
+                    var str2 = "";
+                    var str3 = "";
+                    var str4 = "";
+                    for(var i =0;i<arr.incomeList.length;i++){
+                        str+='<tr>'
+                            +'<td>'
+                            +'<input name="" type="checkbox" value="" />'
+                            +'</td>'
+                            +'<td>'+arr.incomeList[i].icType+'</td>'
+                            +'<td>'+arr.incomeList[i].amount+'</td>'
+                            +'<td>'+arr.incomeList[i].inDesc+'</td>'
+                            +'<td>'+arr.incomeList[i].emp.realName+'</td>'
+                            +'<td>'+arr.incomeList[i].idDate+'</td>'
+                            +'<td><a href="/InOutController/delete?icId='+arr.incomeList[i].icId+'" class="tablelink"> 删除</a></td>'
+                            +'</tr>';
+                    }
+                    if(currnav==1){
+                        str3 = '<li class="paginItem"><span class="pagepre"></span></li>';
+                    }else{
+                        str3 = '<li class="paginItem"><a href="javascript:showIncome('+arr.pageUtil.prev+');"><span class="pagepre"></span></a></li>';
+                    }
+                    for (var i = arr.pageUtil.begin;i<=arr.pageUtil.end;i++){
+                        if(currnav==i){
+                            str2+='<li class="paginItem current">'
+                                +'<a href="javascript:showIncome('+i+');"><span style="color:#76AED4;">'+i+'</span></a>'
+                                +'</li>';
+                        }else{
+                            str2+='<li class="paginItem current">'
+                                +'<a href="javascript:showIncome('+i+');">'+i+'</a>'
+                                +'</li>';
+                        }
+                    }
+                    if(arr.pageUtil.end==currnav){
+                        str4 = '<li class="paginItem"><span class="pagenxt"></span></li>';
+                    }else{
+                        str4 = '<li class="paginItem"><a href="javascript:showIncome('+arr.pageUtil.next+');"><span class="pagenxt"></span></a></li>';
+                    }
+                    var str5 = str3+str2+str4;
+                    //写入指定位置
+                    $("#tbody1").html(str);
+                    $("#ye").html(str5);
+                    $("#count").html(arr.pageUtil.rowcount);
+                    $("#dq").html(arr.pageUtil.currnav);
+                },
+                error:function(xhr){
+                    alert(xhr.status);
+                }
+            });
+        }
+    </script>
+
+
+</head>
+
+<body>
+
+<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+        <li><a href="#">收支管理</a></li>
+        <li><a href="#">查看收入</a></li>
+    </ul>
+</div>
+
+<div class="rightinfo">
+
+    <ul class="prosearch">
+        <li>
+            <label>查询：</label>
+            <i>起始登记时间</i>
+            <a>
+                <input name="startTime" id="startTime" type="text" class="scinput" onfocus="WdatePicker({skin:'whyGreen',lang:'en'})"/>
+            </a>
+            <i>结束登记时间</i>
+            <a>
+                <input name="endTime" id="endTime" type="text" class="scinput" onfocus="WdatePicker({skin:'whyGreen',lang:'en'})"/>
+            </a>
+            <i>收入类型</i>
+            <a>
+                <select class="select1" name="icType" id="icType">
+                    <option value="">全部</option>
+                    <option value="外包">人员外包</option>
+                    <option value="开发">项目开发</option>
+                    <option value="报名费">报名费</option>
+                    <option value="学费">学费</option>
+                    <option value="其他">其他</option>
+                </select>
+            </a>
+            <a>
+                <input id="check" type="button" class="sure" value="查询" onclick="showIncome(1)"/>
+            </a>
+        </li>
+
+
+    </ul>
+
+    <div class="formtitle1"><span>收入列表</span></div>
+
+    <table class="tablelist">
+        <thead>
+        <tr>
+            <th>
+                <input name="" type="checkbox" value="" checked="checked" />
+            </th>
+            <th>类型<i class="sort"><img src="../../static/images/px.gif" /></i></th>
+            <th>金额</th>
+            <th>备注</th>
+            <th>登记人</th>
+            <th>登记时间</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="tbody1">
+
+        </tbody>
+    </table>
+
+    <div class="pagin">
+        <div class="message">共<i class="blue" id="count"></i>条记录，当前显示第&nbsp;<i class="blue"  id="dq">&nbsp;</i>页</div>
+        <ul class="paginList" id="ye">
+
+        </ul>
+    </div>
+
+    <div class="tip">
+        <div class="tiptop"><span>提示信息</span>
+            <a></a>
+        </div>
+
+        <div class="tipinfo">
+            <span><img src="../../static/images/ticon.png" /></span>
+            <div class="tipright">
+                <p>是否确认对信息的修改 ？</p>
+                <cite>如果是请点击确定按钮 ，否则请点取消。</cite>
+            </div>
+        </div>
+
+        <div class="tipbtn">
+            <input name="" type="button" class="sure" value="确定" />&nbsp;
+            <input name="" type="button" class="cancel" value="取消" />
+        </div>
+
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    $('.tablelist tbody tr:odd').addClass('odd');
+</script>
+<p th:text="${error}"></p>
+</body>
+
+</html>

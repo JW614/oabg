@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"  xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>无标题文档</title>
+    <link href="../static/css/style.css" rel="stylesheet" type="text/css"/>
+    <script language="JavaScript" src="../static/js/jquery.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            //顶部导航切换
+            $(".nav li a").click(function () {
+                $(".nav li a.selected").removeClass("selected")
+                $(this).addClass("selected");
+            })
+        })
+    </script>
+
+
+</head>
+
+<body style="background:url(../static/images/topbg.gif) repeat-x;">
+
+<div class="topleft">
+    <a href="../static/main.html" target="_parent"><img src="../static/images/logo.png" title="系统首页"/></a>
+</div>
+    <ul class="nav">
+        <li th:if="${session.user.empType} eq 2"><a href="/deptAdd" target="rightFrame" class="selected"><img src="../static/images/icon01.png"
+                                                                                   title="添加部门"/>
+            <h2>添加部门</h2></a></li>
+        <li th:if="${session.user.empType} eq 2"><a href="/EmployeeController/toAdd" target="rightFrame"><img src="../static/images/icon02.png"
+                                                                                    title="添加员工"/>
+            <h2>添加员工</h2></a></li>
+        <li th:if="${session.user.empType} eq 2"><a href="/EmployeeController/findAll" target="rightFrame"><img src="../static/images/icon03.png"
+                                                                                      title="员工管理"/>
+            <h2>员工管理</h2></a></li>
+        <li><a href="/expenseAdd" target="rightFrame"><img src="../static/images/icon04.png" title="添加报销"/>
+            <h2>添加报销</h2></a></li>
+        <li><a href="/dutyAdd" target="rightFrame"><img src="../static/images/icon05.png" title="签到签退"/>
+            <h2>签到签退</h2></a></li>
+        <li><a href="/myInfo" target="rightFrame"><img src="../static/images/icon06.png" title="我的信息"/>
+            <h2>我的信息</h2></a></li>
+    </ul>
+
+<div class="topright">
+    <ul>
+        <li><span><img src="../static/images/help.png" title="帮助" class="helpimg"/></span><a href="../static/tech.html" target="rightFrame">帮助</a>
+        </li>
+        <li><a href="/EmployeeController/loginout" target="_parent">退出</a></li>
+    </ul>
+
+    <div class="user">
+        <span><a href="/myInfo" target="rightFrame" th:text="${session.user.realName }">无</a></span>
+    </div>
+
+</div>
+
+</body>
+</html>

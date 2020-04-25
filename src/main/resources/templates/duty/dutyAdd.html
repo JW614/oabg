@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>无标题文档</title>
+    <link href="../../static/css/style.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="../../static/js/jquery.js"></script>
+    <script src="http://pv.sohu.com/cityjson?ie=utf-8"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#signin").click(function () {
+                $.ajax({
+                    type: "post",
+                    url: "/DutyController/ipGd?cip=" + returnCitySN.cip,
+                    dataType: "text",
+                    success: function (result) {
+                        eval("var arr = " + result);
+                        $("#incity").html(arr.province + " " + arr.city);
+                        $.ajax({
+                            type: "get",
+                            url: "/DutyController/signin?incity=" + arr.province + " " + arr.city,
+                            dataType: "text",
+                            success: function (result) {
+                                //alert(result);
+                                if (result == 1) {
+                                    $("#signintip").html("签到成功");
+                                } else if (result == 2) {
+                                    $("#signintip").html("已经签到，不能重复签到");
+                                } else {
+                                    $("#signintip").html("签到失败，请联系行政");
+                                }
+                            },
+                            error: function (xhr) {
+                                alert(xhr.status);
+                            }
+                        });
+                    },
+                    error: function (xhr) {
+                        alert(xhr.status);
+                    }
+                });
+            });
+            $("#signout").click(function () {
+                $.ajax({
+                    type: "post",
+                    url: "/DutyController/ipGd?cip=" + returnCitySN.cip,
+                    dataType: "text",
+                    success: function (result) {
+                        eval("var arr = " + result);
+                        $("#outcity").html(arr.province + " " + arr.city);
+                        $.ajax({
+                            type: "get",
+                            url: "/DutyController/signout?outcity=" + arr.province + " " + arr.city,
+                            dataType: "text",
+                            success: function (result) {
+                                //alert(result);
+                                $("#signouttip").html(result);
+                            },
+                            error: function (xhr) {
+                                alert(xhr.status);
+                            }
+                        });
+                    },
+                    error: function (xhr) {
+                        alert(xhr.status);
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+
+<body>
+
+<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+        <li><a href="#">考勤管理</a></li>
+        <li><a href="#">签到签退</a></li>
+    </ul>
+</div>
+
+<div class="formbody">
+
+    <div class="formtitle"><span>基本信息</span></div>
+
+    <ul class="forminfo">
+        <li><label>&nbsp;</label><input name="" id="signin" type="button" class="btn" value="签到"/> 每天签到一次，不可重复签到</li>
+        <li><span id="incity"></span></li>
+        <li><span id="signintip"></span></li>
+        <li><label>&nbsp;</label></li>
+        <li><label>&nbsp;</label><input name="" id="signout" type="button" class="btn" value="签退"/>可重复签退，以最后一次签退为准</li>
+        <li><span id="outcity"></span></li>
+        <li><span id="signouttip"></span></li>
+    </ul>
+
+
+</div>
+
+
+</body>
+
+</html>

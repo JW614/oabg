@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>无标题文档</title>
+    <link href="../../static/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="../../static/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="../../static/css/select.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="../../static/js/jquery.js"></script>
+    <script type="text/javascript" src="../../static/js/jquery.idTabs.min.js"></script>
+    <script type="text/javascript" src="../../static/js/select-ui.min.js"></script>
+    <script type="text/javascript" src="../../static/editor/kindeditor.js"></script>
+    <script type="text/javascript" src="../../static/My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(e) {
+            $(".select1").uedSelect({
+                width : 345
+            });
+
+        });
+        function toVaild() {
+            var a = /((^[1-9]\d*)|^0)(\.\d{0,2}){0,1}$/;
+            var b = /^(\d{1,4})(-|\/)(\d{1,2})\2(\d{1,2})$/;
+            if(!a.test($("#amount").val())){
+                $("#amountspan").html("请输入正确的金额");
+                return false;
+            }else{
+                $("#amountspan").html("");
+            }
+            if(!b.test($("#idDate").val())){
+                $("#idDatespan").html("日期格式不正确");
+                return false;
+            }else{
+                $("#idDatespan").html("");
+            }
+            if($("#inDesc").val() == ''||$("#inDesc").val() == null){
+                $("#inDescspan").html("请做好相应备注");
+                return false;
+            }else{
+                $("#inDescspan").html("");
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+        <li><a href="#">收支管理</a></li>
+        <li><a href="#">添加收入</a></li>
+    </ul>
+</div>
+
+<div class="formbody">
+
+    <div class="formtitle"><span>基本信息</span></div>
+    <form action="/InOutController/incomeAdd" method="post" onsubmit="return toVaild()">
+        <ul class="forminfo">
+            <li>
+                <label>收入金额</label>
+                <input id="amount" name="amount" type="text" class="dfinput" /><i></i>
+                <span id="amountspan" style="color:red;"></span>
+            </li>
+            <li>
+                <label>收入类型</label>
+                <cite>
+                    <input name="icType" type="radio" value="外包" checked="checked" />人员外包&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input name="icType" type="radio" value="开发" />项目开发&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input name="icType" type="radio" value="报名费" />报名费&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input name="icType" type="radio" value="学费" />学费&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input name="icType" type="radio" value="其他" />其他&nbsp;&nbsp;&nbsp;&nbsp;
+                </cite>
+            </li>
+            <li>
+                <label>收入日期</label>
+                <input id="idDate" name="idDate" type="text" class="dfinput" onfocus="WdatePicker({skin:'whyGreen',lang:'en'})"/>
+                <span id="idDatespan" style="color:red;"></span>
+            </li>
+            <li>
+                <label>备注</label>
+                <textarea id="inDesc" name="inDesc" cols="" rows="" class="textinput"></textarea>
+                <span id="inDescspan" style="color:red;"></span>
+            </li>
+            <li>
+                <label>&nbsp;</label>
+                <input name="" type="submit" class="btn" value="确认保存" />
+            </li>
+            <li><p th:text="${error}"></p></li>
+        </ul>
+    </form>
+</div>
+
+</body>
+
+</html>

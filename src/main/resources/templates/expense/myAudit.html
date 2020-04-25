@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>无标题文档</title>
+    <link href="../../static/css/style.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="../../static/js/jquery.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".click").click(function () {
+                $(".tip").fadeIn(200);
+            });
+            $(".tiptop a").click(function () {
+                $(".tip").fadeOut(200);
+            });
+            $(".sure").click(function () {
+                $(".tip").fadeOut(100);
+            });
+            $(".cancel").click(function () {
+                $(".tip").fadeOut(100);
+            });
+        });
+    </script>
+
+</head>
+
+<body>
+
+<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+        <li><a href="#">报销管理</a></li>
+        <li><a href="#">我的审核历史</a></li>
+    </ul>
+</div>
+
+<div class="rightinfo">
+
+    <div class="formtitle1"><span>我的审核</span></div>
+
+    <table class="tablelist">
+        <thead>
+        <tr>
+            <th>
+                <input name="" type="checkbox" value="" checked="checked"/>
+            </th>
+            <th>报销人<i class="sort"><img src="../../static/images/px.gif"/></i></th>
+            <th>报销总额</th>
+            <th>报销时间</th>
+            <th>审核时间</th>
+            <th>总备注信息</th>
+            <th>查看具体报销项</th>
+            <th>查看所附图片</th>
+            <th>审核结果</th>
+            <th>查看审核历史</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr th:each="exp:${exp4List }">
+                <td>
+                    <input name="" type="checkbox" value=""/>
+                </td>
+                <td th:text="${exp.emp.realName }">${exp.emp.realName }</td>
+                <td th:text="${exp.totalAmount }">${exp.totalAmount }</td>
+                <td th:text="${exp.expTime }">${exp.expTime }</td>
+                <td th:text="${exp.auditing.auditTime }">${exp.auditing.auditTime }</td>
+                <td th:text="${exp.expDesc }">${exp.expDesc }</td>
+                <td><a th:href="@{/ExpenseController/see3(expId=${exp.expId })}" class="tablelink"> 查看具体报销项</a></td>
+                <td><a th:href="@{/ExpenseController/expenseImg(expId=${exp.expId },i=1)}" class="tablelink">查看所附图片</a></td>
+                <td th:text="${exp.auditing.result }">${exp.auditing.result }</td>
+                <td><a th:href="@{/ExpenseController/check3(expId=${exp.expId })}" class="tablelink">查看审核记录</a></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="pagin">
+        <div class="message">共<i class="blue" th:text="${pageUtil.rowcount }">1256</i>条记录，当前显示第&nbsp;<i class="blue" th:text="${pageUtil.currnav }">2&nbsp;</i>页</div>
+        <ul class="paginList">
+            <li class="paginItem"><a th:href="@{/ExpenseController/looked(currnav=${pageUtil.prev })}"><span class="pagepre"></span></a></li>
+            <li th:each="i: ${#numbers.sequence(pageUtil.begin,pageUtil.end)}" class="paginItem"><a th:text="${i}" th:href="@{/ExpenseController/looked(currnav=${i })}"></a></li>
+            <li class="paginItem"><a th:href="@{/ExpenseController/looked(currnav=${pageUtil.next })}"><span class="pagenxt"></span></a></li>
+        </ul>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $('.tablelist tbody tr:odd').addClass('odd');
+</script>
+
+</body>
+
+</html>

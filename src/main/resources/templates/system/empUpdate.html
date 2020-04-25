@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>无标题文档</title>
+    <link href="../../static/css/style.css" rel="stylesheet" type="text/css"/>
+    <link href="../../static/css/style.css" rel="stylesheet" type="text/css"/>
+    <link href="../../static/css/select.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="../../static/js/jquery.js"></script>
+    <script type="text/javascript" src="../../static/js/jquery.idTabs.min.js"></script>
+    <script type="text/javascript" src="../../static/My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript" src="../../static/js/select-ui.min.js"></script>
+    <script type="text/javascript" src="../../static/editor/kindeditor.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function (e) {
+            $(".select1").uedSelect({
+                width: 345
+            });
+
+        });
+        function toVaild() {
+            var a = /^(\d{1,4})(-|\/)(\d{1,2})\2(\d{1,2})$/;
+            var b = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+            var c = /^1[34578]\d{9}$/;
+            var d = /^[1-9]\d{4,9}$/;
+            if($("#realName").val() == ''|| $("#realName").val() == null){
+                alert("真实姓名不能为空");
+            }
+            if(!a.test($("#birthDate").val())){
+                alert("生日日期格式不正确");
+                return false;
+            }
+            if(!a.test($("#hireDate").val())){
+                alert("入职日期格式不正确");
+                return false;
+            }
+            if($("#leaveDate").val() != '' && $("#leaveDate").val() != null){
+                if(!a.test($("#leaveDate").val())){
+                    alert("离职日期格式不正确");
+                    return false;
+                }
+            }
+            if(!c.test($("#phone").val())){
+                alert("请输入正确的手机号");
+                return false;
+            }
+            if(!d.test($("#qq").val())){
+                alert("请输入正确的qq号");
+                return false;
+            }
+            if(!b.test($("#idCard").val())){
+                alert("身份证格式不正确");
+                return false;
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+        <li><a href="#">人事管理</a></li>
+        <li><a href="#">修改员工信息</a></li>
+    </ul>
+</div>
+
+<div class="formbody">
+
+    <div class="formtitle"><span>基本信息</span></div>
+    <form action="/EmployeeController/update" method="post" onsubmit="return toVaild()">
+        <ul class="forminfo">
+            <li>
+                <label>用户名</label>
+                <input name="empId" type="text" class="dfinput" th:value="${emp.empid }" readonly="readonly"/><i></i></li>
+            <li>
+            <li>
+                <label>真实姓名</label>
+                <input id="realName" name="realName" type="text" class="dfinput" th:value="${emp.realName }"/><i></i></li>
+            <li>
+                <label>性别</label><cite>
+                <input th:if="${emp.sex} eq '男'" name="sex" type="radio" value="男" th:text="男" checked="checked"/>&nbsp;&nbsp;&nbsp;&nbsp;
+                <input th:if="${emp.sex} eq '男'" name="sex" type="radio" value="女" th:text="女"/></cite>
+                <input th:if="${emp.sex} eq '女'" name="sex" type="radio" value="男" th:text="男"/>&nbsp;&nbsp;&nbsp;&nbsp;
+                <input th:if="${emp.sex} eq '女'" name="sex" type="radio" value="女" th:text="女" checked="checked"/></cite>
+            </li>
+            <li>
+                <label>出生日期</label>
+                <input id="birthDate" name="birthDate" type="text" class="dfinput" onfocus="WdatePicker({skin:'whyGreen',lang:'en'})" th:value="${emp.birthDate }"/></li>
+            <li>
+            <li>
+                <label>入职时间</label>
+                <input id="hireDate" name="hireDate" type="text" class="dfinput" onfocus="WdatePicker({skin:'whyGreen',lang:'en'})" th:value="${emp.hireDate }"/><i></i></li>
+
+            <li>
+                <label>离职时间</label>
+                <input id="leaveDate" name="leaveDate" type="text" class="dfinput" onfocus="WdatePicker({skin:'whyGreen',lang:'en'})" th:value="${emp.leaveDate }"/><i></i></li>
+            <li>
+                <label>是否在职</label><cite>
+                <input th:if="${emp.onDuty} eq 1" name="onDuty" type="radio" value="1" checked="checked" th:text="是"/>&nbsp;&nbsp;&nbsp;&nbsp;
+                <input th:if="${emp.onDuty} eq 1" name="onDuty" type="radio" value="0" th:text="否"/></cite>
+                <input th:if="${emp.onDuty} eq 0" name="onDuty" type="radio" value="1" th:text="是"/>&nbsp;&nbsp;&nbsp;&nbsp;
+                <input th:if="${emp.onDuty} eq 0" name="onDuty" type="radio" value="0" th:text="否" checked="checked"/></cite>
+            </li>
+            <li>
+                <label>员工类型</label><cite>
+                    <input th:if="${emp.empType} eq 1" name="empType" type="radio" value="1" th:text="基层员工" checked="checked"/>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input th:if="${emp.empType} eq 1" name="empType" type="radio" value="2" th:text="各级管理人员"/>
+                    <input th:if="${emp.empType} eq 2" name="empType" type="radio" value="1" th:text="基层员工"/>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input th:if="${emp.empType} eq 2" name="empType" type="radio" value="2" th:text="各级管理人员" checked="checked"/>
+            </cite>
+            </li>
+            <li>
+                <label>所属部门<b>*</b></label>
+                <div class="vocation">
+                    <select class="select1" name="deptno">
+                        <option th:each="dept:${deptList }" th:if="${dept.deptno } eq ${emp.dept.deptno}" th:value="${dept.deptno }" th:text="${dept.deptname }" selected="selected"></option>
+                        <option th:each="dept:${deptList }" th:if="${dept.deptno } ne ${emp.dept.deptno}" th:value="${dept.deptno }" th:text="${dept.deptname }"></option>
+                    </select>
+                </div>
+
+            </li>
+            <li>
+                <label>从事岗位<b>*</b></label>
+                <div class="vocation">
+                    <select class="select1" name="positionId">
+                        <option th:each="position:${positionList }" th:if="${position.posid } eq ${emp.position.posid}" th:value="${position.posid }" th:text="${position.pname }" selected="selected"></option>
+                        <option th:each="position:${positionList }" th:if="${position.posid } ne ${emp.position.posid}" th:value="${position.posid }" th:text="${position.pname }"></option>
+                    </select>
+                </div>
+
+            </li>
+            <li>
+                <label>直接上级<b>*</b></label>
+                <div class="vocation">
+                    <select class="select1" name="mgrId">
+                        <option th:each="mgr:${mgrList }" th:if="${mgr.empid } eq ${emp.mgr.empid}" th:value="${mgr.empid }" th:text="${mgr.realName}" selected="selected"></option>
+                        <option th:each="mgr:${mgrList }" th:if="${mgr.empid } ne ${emp.mgr.empid}" th:value="${mgr.empid }" th:text="${mgr.realName }"></option>
+                    </select>
+                </div>
+            </li>
+            <li>
+                <label>联系方式</label>
+                <input id="phone" name="phone" type="text" class="dfinput" th:value="${emp.phone }"/>
+            </li>
+            <li>
+                <label>QQ号</label>
+                <input id="qq" name="qq" type="text" class="dfinput" th:value="${emp.qq }"/>
+            </li>
+            <li>
+                <label>紧急联系人信息</label>
+                <textarea name="emerContactPerson" cols="" rows=""
+                          class="textinput" th:text="${emp.emerContectPerson }">${emp.emerContectPerson }</textarea>
+            </li>
+            <li>
+                <label>身份证号</label>
+                <input id="idCard" name="idCard" type="text" class="dfinput" th:value="${emp.idCard }"/>
+            </li>
+            <li>
+                <label>&nbsp;</label>
+                <input name="" type="submit" class="btn" value="确认保存"/>
+            </li>
+        </ul>
+    </form>
+    <p th:text="${error}"></p>
+</div>
+
+</body>
+
+</html>

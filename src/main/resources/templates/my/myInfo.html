@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <base href="<%=basePath%>">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>无标题文档</title>
+    <link href="../../static/css/style.css" rel="stylesheet" type="text/css"/>
+    <link href="../../static/css/style.css" rel="stylesheet" type="text/css"/>
+    <link href="../../static/css/select.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="../../static/js/jquery.js"></script>
+    <script type="text/javascript" src="../../static/js/jquery.idTabs.min.js"></script>
+    <script type="text/javascript" src="../../static/js/select-ui.min.js"></script>
+    <script type="text/javascript" src="../../static/editor/kindeditor.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function (e) {
+            $(".select1").uedSelect({
+                width: 345
+            });
+
+        });
+        function toVaild() {
+            var a = /^1[34578]\d{9}$/;
+            var b = /^[1-9]\d{4,9}$/;
+            if($("#phone").val() != ''&&$("#phone").val() != null){
+                if(!a.test($("#phone").val())){
+                    $("#phonespan").html("请输入正确的手机号");
+                    return false;
+                }else {
+                    $("#phonespan").html("");
+                }
+            }else{
+                $("#phonespan").html("");
+            }
+            if($("#qq").val() != ''&&$("#qq").val() != null){
+                if(!b.test($("#qq").val())){
+                    $("#qqspan").html("请输入正确的qq号");
+                    return false;
+                }else {
+                    $("#qqspan").html("");
+                }
+            }else{
+                $("#qqspan").html("");
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+        <li><a href="#">个人平台</a></li>
+        <li><a href="#">我的信息</a></li>
+    </ul>
+</div>
+
+<div class="formbody">
+
+    <div class="formtitle"><span>修改个人信息</span></div>
+    <form action="/EmployeeController/modify" method="post" onsubmit="return toVaild()">
+        <ul class="forminfo">
+            <li>
+                <label>联系方式</label>
+                <input th:if="${emp2} ne null" id="phone" name="phone" type="text" class="dfinput" th:value="${emp2.phone }"/>
+                <input th:if="${emp2} eq null" id="phone" name="phone" type="text" class="dfinput" />
+                <span id="phonespan" style="color: red"></span>
+            </li>
+            <li>
+                <label>QQ号</label>
+                <input th:if="${emp2} ne null" id="qq" name="qq" type="text" class="dfinput" th:value="${emp2.qq }"/>
+                <input th:if="${emp2} eq null" id="qq" name="qq" type="text" class="dfinput"/>
+                <span id="qqspan" style="color: red"></span>
+            </li>
+            <li>
+                <label>紧急联系人信息</label>
+                <textarea th:if="${emp2} ne null" name="emerContectPerson" cols="" rows=""
+                          class="textinput" th:text="${emp2.emerContectPerson }"></textarea>
+                <textarea th:if="${emp2} eq null" name="emerContectPerson" cols="" rows=""
+                          class="textinput"></textarea>
+            </li>
+            <li>
+                <label>&nbsp;</label>
+                <input name="" type="submit" class="btn" value="确认保存"/>
+            </li>
+        </ul>
+    </form>
+    <p th:text="${error }"></p>
+    <p th:text="${success }"></p>
+</div>
+
+</body>
+
+</html></html>

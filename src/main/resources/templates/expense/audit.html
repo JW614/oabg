@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>审核报销单</title>
+    <script type="text/javascript" src="../../static/js/jquery.js"></script>
+    <link href="../../static/css/style.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript">
+        function submitForm() {
+            window.close();
+
+        }
+
+        function auditExp() {
+            //获取审核表单的参数
+            var expId = $("#expId").val();
+            var resultArr = $("input[name=result]");
+            var result = "";
+            for (var i = 0; i < resultArr.length; i++) {
+                var flag = resultArr[i].checked;
+                if (flag) {
+                    result = resultArr[i].value;
+                    break;
+                }
+            }
+            var auditDesc = $("#auditDesc").val();
+            //alert(expId+"  "+result+"  "+auditDesc);
+            //使用Ajax方式审核报销单
+            $.ajax({
+                type: "post",
+                url: "/ExpenseController/audit",
+                data: {expId: expId, result: result, auditDesc: auditDesc},
+                success: function (result) {
+                    //输出结果
+                    alert(result);
+                    //关闭当前窗口
+                    window.close();
+                    //刷新父窗口
+                    window.opener.location.reload();
+                },
+                error: function (xhr) {
+                    alert(xhr.status);
+                }
+            });
+        }
+    </script>
+</head>
+
+<body>
+
+<div class="formtitle"><span>审核报销单</span></div>
+<form action="#" onsubmit="submitForm()">
+    <ul class="forminfo">
+        <li>
+            <label>报销单编号</label>
+            <input name="expId" id="expId" type="text" class="dfinput" readonly="readonly" th:value="${param.expId }"/>
+        </li>
+        <li>
+            <label>审核结果</label>
+            <input name="result" type="radio" value="通过"/>通过
+            <input name="result" type="radio" value="拒绝 "/>拒绝
+            <input name="result" type="radio" value="打回 "/>打回
+        </li>
+        <li>
+            <label>审核意见</label>
+            <input name="auditDesc" id="auditDesc" type="text" class="dfinput"/>
+        </li>
+        <li>
+            <label>&nbsp;</label>
+            <input name="" type="button" onclick="auditExp()" class="btn" value="确认保存"/>
+        </li>
+    </ul>
+</form>
+</body>
+
+</html>

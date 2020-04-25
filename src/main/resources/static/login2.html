@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎登录后台管理系统</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
+    <script language="JavaScript" src="js/jquery.js"></script>
+    <script src="js/cloud.js" type="text/javascript"></script>
+    <style type="text/css">
+        .video {
+            width: 200px;
+            height: 200px;
+            margin: auto;
+            background-image: url('images/2.jpeg');
+        }
+
+        /*#video1{*/
+        /*    position:absolute;*/
+        /*    top:45%;*/
+        /*    left:45%;*/
+        /*}*/
+    </style>
+    <script language="javascript">
+        $(function () {
+            $('.loginbox').css({'position': 'absolute', 'left': ($(window).width() - 692) / 2});
+            $(window).resize(function () {
+                $('.loginbox').css({'position': 'absolute', 'left': ($(window).width() - 692) / 2});
+            });
+        });
+
+        function fanhui() {
+            window.location = "login.html";
+        }
+    </script>
+
+</head>
+
+<body style="background-color:#1c77ac; background-image:url(images/light.png); background-repeat:no-repeat; background-position:center top; overflow:hidden;">
+
+
+<div id="mainBody">
+    <div id="cloud1" class="cloud"></div>
+    <div id="cloud2" class="cloud"></div>
+</div>
+
+
+<div class="logintop">
+    <span>欢迎访问OA办公系统</span>
+    <ul>
+        <li><a href="#">回首页</a></li>
+        <li><a href="#">帮助</a></li>
+        <li><a href="#">关于</a></li>
+    </ul>
+</div>
+
+<div class="loginbody">
+
+    <span class="systemlogo"></span>
+
+    <div class="loginbox loginbox2">
+        <form action="" method="post">
+            <ul>
+                <li>
+                    <div class="video" id="video1">
+
+                        <video id="myVideo" src="" class="video"></video>
+
+                    </div>
+                </li>
+                <li>
+                    <canvas id="myCanvas" width="600" height="400" hidden="hidden"></canvas>
+                </li>
+
+                <li><input name="" type="button" class="loginbtn" value="用户名登陆" onclick="fanhui()"/></li>
+            </ul>
+        </form>
+    </div>
+
+</div>
+<script>
+    var myVideo = document.getElementById('myVideo');
+    navigator.mediaDevices.getUserMedia({
+        video: true
+    }).then(function (mediaStream) {
+        myVideo.srcObject = mediaStream;
+        myVideo.onloadedmetadata = function () {
+            /* myVideo.controls = "controls"; 不显示控件*/
+            myVideo.play();
+        }
+    });
+
+    function jiance() {
+        var canvas = document.getElementById('myCanvas').getContext('2d');
+        canvas.drawImage(myVideo, 0, 0);
+        var imgSrc = document.getElementById("myCanvas").toDataURL(
+            "image/png").split("base64,")[1];
+        $.ajax({
+            type: "POST",
+            url: 'http://localhost:8080/AiLoginController/login',
+            data: {
+                message: imgSrc
+            },
+            success: function (result1) {
+                eval("var arr = " + result1);
+                if (arr.result.user_list[0].score > 80) {
+                    window.location = "http://localhost:8080/AiLoginController/login2?username=" + arr.result.user_list[0].user_id;
+                } else {
+                    return;
+                }
+            }
+        })
+    }
+
+    setInterval("jiance()", "1000");  //每隔一秒执行一次函数截图
+
+
+    //将图片Base64 转成文件
+</script>
+<script type="text/javascript" color="120,148,255" opacity='0.8' zIndex="1" count="100"
+        src="https://files.cnblogs.com/files/lfri/canvas-nest.js"></script>
+
+
+</body>
+</html>

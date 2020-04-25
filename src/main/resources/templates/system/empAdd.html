@@ -1,0 +1,234 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>无标题文档</title>
+    <link href="../../static/css/style.css" rel="stylesheet" type="text/css"/>
+    <link href="../../static/css/style.css" rel="stylesheet" type="text/css"/>
+    <link href="../../static/css/select.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="../../static/js/jquery.js"></script>
+    <script type="text/javascript" src="../../static/js/jquery.idTabs.min.js"></script>
+    <script type="text/javascript" src="../../static/js/select-ui.min.js"></script>
+    <script type="text/javascript" src="../../static/editor/kindeditor.js"></script>
+    <script type="text/javascript" src="../../static/My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function (e) {
+            $(".select1").uedSelect({
+                width: 345
+            });
+        });
+        function jiaoyan() {
+            var empId = $("#empId").val();
+            $.ajax({
+                type: "post",
+                url: "/EmployeeController/findEmpId",
+                dataType: "json",
+                data: {"empId": empId},
+                success: function (result) {
+                    if(result.data == '2'){
+                        if($("#empId").val() == '' || $("#empId").val() == null){
+                            $("#empidspan").html("用户名不能为空");
+                            $("#empidspan").val("用户名不能为空");
+                        }else{
+                            $("#empidspan").html("用户名可用");
+                            $("#empidspan").val("用户名可用");
+                        }
+                    }else{
+                        $("#empidspan").html("用户名不可用");
+                        $("#empidspan").val("用户名不可用");
+                    }
+                },
+                error:function(xhr) {
+                    alert(xhr.status);
+                }
+            });
+        }
+        function acquisition() {
+            var idcard = $("#idcard").val();
+            /!*通过正则表达式来指定输出格式为:1990-01-01*!/
+            var birth = idcard.slice(6, 14).replace(/(.{4})(.{2})/, "$1-$2-");
+            $("#birth").val(birth);
+            var sex = '';
+            if (parseInt(idcard.slice(-2, -1)) % 2 == 1) {
+                sex = '男';
+            } else {
+                sex = '女';
+            }
+            var sex1 = $("#sex1");
+            var sex2 = $("#sex2");
+            if (sex == sex1.val()) {
+                sex1.attr("checked", "checked");
+            } else {
+                sex2.attr("checked", "checked");
+            }
+        };
+        function toVaild() {
+            var a = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+            var b = /^(\d{1,4})(-|\/)(\d{1,2})\2(\d{1,2})$/;
+            var c = /^1[34578]\d{9}$/;
+            var d = /^[1-9]\d{4,9}$/;
+            if($("#empidspan").val() != '用户名可用'){
+                return false;
+            }
+            if($("#realName").val() == '' || $("#realName").val() == null){
+                $("#realNamei").html("真实姓名不能为空");
+                return false;
+            }else{
+                $("#realNamei").html("");
+            }
+            if(!a.test($("#idcard").val())){
+                $("#idcardi").html("身份证格式不正确");
+                return false;
+            }else {
+                $("#idcardi").html("");
+            }
+            if(!b.test($("#birth").val())){
+                $("#birthspan").html("日期格式不正确");
+                return false;
+            }else{
+                $("#birthspan").html("");
+            }
+            if(!b.test($("#hireDate").val())){
+                $("#hireDatespan").html("日期格式不正确");
+                return false;
+            }else{
+                $("#hireDatespan").html("");
+            }
+            if($("#leaveDate").val() != ''&&$("#leaveDate").val() != null){
+                if(!b.test($("#leaveDate").val())){
+                    $("#leaveDatespan").html("日期格式不正确");
+                    return false;
+                }else{
+                    $("#leaveDatespan").html("");
+                }
+            }
+            if(!c.test($("#phone").val())){
+                $("#phonei").html("请输入正确的手机号");
+                return false;
+            }else {
+                $("#phonei").html("");
+            }
+            if(!d.test($("#qq").val())){
+                $("#qqi").html("请输入正确的qq号");
+                return false;
+            }else {
+                $("#qqi").html("");
+            }
+
+        }
+    </script>
+    <script type="text/javascript">
+        KE.show({id: "ecp", width: "800px", height: "300px"});
+    </script>
+</head>
+
+<body>
+
+<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+        <li><a href="#">人事管理</a></li>
+        <li><a href="#">添加员工</a></li>
+    </ul>
+</div>
+
+<div class="formbody">
+
+    <div class="formtitle"><span>基本信息</span></div>
+    <form action="/EmployeeController/add" method="post" onsubmit="return toVaild()">
+        <ul class="forminfo">
+            <li>
+                <label>用户名</label>
+                <input id="empId" name="empId" type="text" class="dfinput" onblur="jiaoyan()"/><i id="empidspan" style="color: red"></i>
+            </li>
+            <li>
+            <li>
+                <label>真实姓名</label>
+                <input id="realName" name="realName" type="text" class="dfinput"/><i id="realNamei" style="color: red"></i>
+            </li>
+            <li>
+                <label>身份证号</label>
+                <input name="idCard" type="text" class="dfinput" id="idcard" onblur="acquisition()"/><i id="idcardi" style="color: red"></i>
+            </li>
+            <li>
+                <label>性别</label><cite>
+                <input name="sex" id="sex1" type="radio" value="男"/>男&nbsp;&nbsp;&nbsp;&nbsp;
+                <input name="sex" id="sex2" type="radio" value="女"/>女<i>也可以根据身份证号自动获取</i></cite>
+
+            </li>
+            <li>
+                <label>出生日期</label>
+                <input name="birthDate" id="birth" type="text" class="dfinput"
+                       onfocus="WdatePicker({skin:'whyGreen',lang:'en'})"/><i>也可以根据身份证号自动获取</i></li>
+                <span id="birthspan" style="color: red"></span>
+            <li>
+            <li>
+                <label>入职时间</label>
+                <input id="hireDate" name="hireDate" type="text" class="dfinput"
+                       onfocus="WdatePicker({skin:'whyGreen',lang:'en'})"/><i></i></li>
+                <span id="hireDatespan" style="color: red"></span>
+            <li>
+                <label>离职时间</label>
+                <input id="leaveDate" name="leaveDate" type="text" class="dfinput" onfocus="WdatePicker({lang:'en'})"/><i></i></li>
+                <span id="leaveDatespan" style="color: red"></span>
+            <li>
+                <label>是否在职</label><cite>
+                <input name="onDuty" type="radio" value="1" checked="checked"/>是&nbsp;&nbsp;&nbsp;&nbsp;
+                <input name="onDuty" type="radio" value="0"/>否</cite>
+            </li>
+            <li>
+                <label>员工类型</label><cite>
+                <input name="empType" type="radio" value="1" checked="checked"/>基层员工&nbsp;&nbsp;&nbsp;&nbsp;
+                <input name="empType" type="radio" value="2"/>各级管理人员
+            </cite>
+            </li>
+            <li>
+                <label>所属部门<b>*</b></label>
+                <div class="vocation">
+                    <select class="select1" name="deptno" >
+                        <option th:each="dept:${deptList}" th:text="${dept.deptname }" th:value="${dept.deptno }">未搜索到</option>
+                    </select>
+                </div>
+            </li>
+            <li>
+                <label>从事岗位<b>*</b></label>
+                <div class="vocation">
+                    <select class="select1" name="positionId">
+                        <option th:each="position:${positionList }" th:value="${position.posid }" th:text="${position.pname }">未搜索到</option>
+                    </select>
+                </div>
+
+            </li>
+            <li>
+                <label>直接上级<b>*</b></label>
+                <div class="vocation">
+                    <select class="select1" name="mgrId">
+                        <option th:each="mgr:${mgrList }" th:value="${mgr.empid }" th:text="${mgr.realName }"></option>
+                    </select>
+                </div>
+            </li>
+            <li>
+                <label>联系方式</label>
+                <input id="phone" name="phone" type="text" class="dfinput"/><i id="phonei" style="color: red"></i>
+            </li>
+            <li>
+                <label>QQ号</label>
+                <input id="qq" name="qq" type="text" class="dfinput"/><i id="qqi" style="color: red"></i>
+            </li>
+            <li>
+                <label>紧急联系人信息</label>
+                <textarea name="emerContectPerson" cols="" rows="" id="ecp" class="textinput"></textarea>
+            </li>
+            <li>
+                <label>&nbsp;</label>
+                <input name="" type="submit" class="btn" value="确认保存"/>
+            </li>
+        </ul>
+    </form>
+    <p th:text="${error}"></p>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>无标题文档</title>
+    <link href="../../static/css/style.css" rel="stylesheet" type="text/css"/>
+    <link href="../../static/css/style.css" rel="stylesheet" type="text/css"/>
+    <link href="../../static/css/select.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="../../static/js/jquery.js"></script>
+    <script type="text/javascript" src="../../static/js/jquery.idTabs.min.js"></script>
+    <script type="text/javascript" src="../../static/js/select-ui.min.js"></script>
+    <script type="text/javascript" src="../../static/editor/kindeditor.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function (e) {
+            $(".select1").uedSelect({
+                width: 345
+            });
+
+        });
+    </script>
+</head>
+
+<body>
+
+<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+        <li><a href="#">人事管理</a></li>
+        <li><a href="#">员工信息详情</a></li>
+    </ul>
+</div>
+
+<div class="formbody">
+
+    <div class="formtitle"><span>基本信息</span></div>
+    <form action="/EmployeeController/findAll" method="post">
+        <ul class="forminfo">
+            <li>
+                <label>用户名</label>
+                <label th:text="${emp.empid }"></label>
+            </li>
+            <li>
+            <li>
+                <label>真实姓名</label>
+                <label th:text="${emp.realName }">${emp.realName }</label>
+            </li>
+            <li>
+                <label>性别</label>
+                <label th:text="${emp.sex }">${emp.sex }</label>
+            </li>
+            <li>
+                <label>出生日期</label>
+                <label th:text="${emp.birthDate }">${emp.birthDate }</label>
+            </li>
+            <li>
+            <li>
+                <label>入职时间</label>
+                <label th:text="${emp.hireDate }">${emp.hireDate }</label>
+            </li>
+
+            <li>
+                <label>离职时间</label>
+                <label th:text="${emp.leaveDate }">${emp.leaveDate }</label>
+            </li>
+            <li>
+                <label>是否在职</label>
+                <label th:text="${emp.onDuty } eq 1?在职:离职">${emp.onDuty }</label>
+            </li>
+            <li>
+                <label>所属部门<b>*</b></label>
+                <label th:each="dept:${deptList }" th:if="${dept.deptno} eq ${emp.dept.deptno }" th:text="${dept.deptname }">${dept.deptname }</label>
+            </li>
+            <li>
+                <label>从事岗位<b>*</b></label>
+                <label th:each="position:${positionList }" th:if="${position.posid} eq ${emp.position.posid }" th:text="${position.pname }">${position.pname }</label>
+            </li>
+            <li>
+                <label>直接上级<b>*</b></label>
+                <label th:each="mgr:${mgrList }" th:if="${mgr.empid} eq ${emp.mgr.empid }" th:text="${mgr.realName }">${mgr.realName }</label>
+            </li>
+            </li>
+            <li>
+                <label>联系方式</label>
+                <label th:text="${emp.phone }">${emp.phone }</label>
+            </li>
+            <li>
+                <label>QQ号</label>
+                <label th:text="${emp.qq }">${emp.qq }</label>
+            </li>
+            <li>
+                <label>紧急联系人信息</label>
+                <label th:text="${emp.emerContectPerson }">${emp.emerContectPerson }</label>
+            </li>
+            <li>
+                <label>身份证号</label>
+                <label th:text="${emp.idCard }">${emp.idCard }</label>
+            </li>
+            <li>
+                <label>&nbsp;</label>
+                <input name="" type="submit" class="btn" value="返回"/>
+            </li>
+        </ul>
+    </form>
+</div>
+
+</body>
+
+</html>

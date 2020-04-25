@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>无标题文档</title>
+    <link href="../../static/css/style.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="../../static/js/jquery.js"></script>
+    <script type="text/javascript">
+        function toVaild() {
+            if($("#posidspan").val() != '岗位编号可用'){
+                return false;
+            }else{
+                $("#posidspan").html("");
+            }
+            if($("#pname").val() == '' || $("#pname").val() == null){
+                $("#pnamespan").html("部门名称不能为空");
+                return false;
+            }else{
+                $("#pnamespan").html("");
+            }
+            if($("#pdesc").val() == '' || $("#pdesc").val() == null){
+                $("#pdescspan").html("部门编号不能为空");
+                return false;
+            }else{
+                $("#pdescspan").html("");
+            }
+        }
+        function jiaoyan(){
+            var posid = $("#posid").val();
+            $.ajax({
+                type: "post",
+                url:"/PositionController/find",
+                dataType:"json",
+                data:{"posid":posid},
+                success:function(result){
+                    if(result.data == '2'){
+                        if($("#posid").val() == '' || $("#posid").val() == null){
+                            $("#posidspan").html("岗位编号不能为空");
+                            $("#posidspan").val("岗位编号不能为空");
+                        }else{
+                            $("#posidspan").html("岗位编号可用");
+                            $("#posidspan").val("岗位编号可用");
+                        }
+                    }else{
+                        $("#posidspan").html("岗位编号不可用");
+                        $("#posidspan").val("岗位编号不可用");
+                    }
+                },
+                error:function (xhr) {
+                    alert(xhr.status);
+                }
+            });
+        }
+    </script>
+</head>
+
+<body>
+
+<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+        <li><a href="#">人事管理</a></li>
+        <li><a href="#">添加岗位</a></li>
+    </ul>
+</div>
+
+<div class="formbody">
+
+    <div class="formtitle"><span>基本信息</span></div>
+    <form action="/PositionController/add" method="post" onsubmit="return toVaild()">
+        <ul class="forminfo">
+            <li>
+                <label>岗位编号</label>
+                <input id="posid" name="posid" type="text" class="dfinput" onblur="jiaoyan()"/>
+                <span id="posidspan" style="color:red;"></span>
+            </li>
+            <li>
+                <label>岗位名称</label>
+                <input id="pname" name="pname" type="text" class="dfinput"/>
+                <span id="pnamespan" style="color:red;"></span>
+            </li>
+            <li>
+                <label>岗位描述</label>
+                <input id="pdesc" name="pdesc" type="text" class="dfinput"/>
+                <span id="pdescspan" style="color:red;"></span>
+            </li>
+            <li><label>&nbsp;</label><input name="" type="submit" class="btn" value="确认保存"/></li>
+            <li><p th:text="${error }"></p></li>
+        </ul>
+    </form>
+
+
+</div>
+
+
+</body>
+
+</html>

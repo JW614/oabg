@@ -1,0 +1,198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>无标题文档</title>
+    <link href="../../static/css/style.css" rel="stylesheet" type="text/css"/>
+    <link href="../../static/css/select.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="../../static/js/jquery.js"></script>
+    <script type="text/javascript" src="../../static/My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript" src="../../static/js/jquery.idTabs.min.js"></script>
+    <script type="text/javascript" src="../../static/js/select-ui.min.js"></script>
+    <script type="text/javascript" src="../../static/editor/kindeditor.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function (e) {
+            $(".select1").uedSelect({
+                width: 200
+            });
+
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".click").click(function () {
+                $(".tip").fadeIn(200);
+            });
+
+            $(".tiptop a").click(function () {
+                $(".tip").fadeOut(200);
+            });
+
+            $(".sure").click(function () {
+                $(".tip").fadeOut(100);
+            });
+
+            $(".cancel").click(function () {
+                $(".tip").fadeOut(100);
+            });
+
+        });
+
+        function clearform() {
+            $("#empId").val("");
+            $("#hireDate").val("");
+        }
+
+        function deleteEmp(empId) {
+            var flag = window.confirm("您确定要删除吗");
+            if (flag) {
+                location.href = "/EmployeeController/delete?empId=" + empId;
+            }
+        }
+
+        function resetpassword(empId) {
+            var flag = window.confirm("您确定要重置密码吗");
+            if (flag) {
+                location.href = "/EmployeeController/resetpwd?empId=" + empId;
+            }
+        }
+        function toVaild() {
+            var a = /^(\d{1,4})(-|\/)(\d{1,2})\2(\d{1,2})$/;
+            if($("#hireDate").val() != '' && $("#hireDate").val() != null){
+                if(!a.test($("#hireDate").val())){
+                    alert("日期格式不正确");
+                    return false;
+                }
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+        <li><a href="#">人事管理</a></li>
+        <li><a href="#">员工管理</a></li>
+    </ul>
+</div>
+
+<div class="rightinfo">
+    <form action="/EmployeeController/find" method="post" onsubmit="return toVaild()">
+        <ul class="prosearch">
+            <li>
+                <label>查询：</label><i>用户名</i>
+                <a>
+                    <input th:if="${empId} ne null" name="empId" id="empId" type="text" class="scinput" th:value="${empId }"/>
+                    <input th:if="${empId} eq null" name="empId" id="empId" type="text" class="scinput"/>
+                </a><i>所属部门</i>
+                <a>
+                    <select class="select1" name="deptno" id="deptno">
+                        <option value="0" selected="selected">所有部门</option>
+                            <option th:each="dept:${deptList }" th:if="${dept.deptno } eq ${deptno2}" th:value="${dept.deptno }" th:text="${dept.deptname }" selected="selected"></option>
+                            <option th:each="dept:${deptList }" th:if="${dept.deptno } ne ${deptno2}" th:value="${dept.deptno }" th:text="${dept.deptname }"></option>
+                    </select>
+                </a>
+
+            </li>
+            <li>
+                <i>是否在职：</i>
+                <input name="onDuty" type="radio" value="1" th:text="是"/>&nbsp;&nbsp;&nbsp;
+                <input name="onDuty" type="radio" value="0" th:text="否"/>&nbsp;
+                <input  name="onDuty" type="radio" id="onDuty" value="-1" checked="checked" th:text="所有"/>&nbsp;
+            </li>
+            <li>
+                <i>入职时间：</i>
+                <a>
+                    <input th:if="${hireDate} ne null" name="hireDate" id="hireDate" type="text" class="scinput"
+                           onfocus="WdatePicker({skin:'whyGreen',lang:'en'})" th:value="${hireDate }"/>
+                    <input th:if="${hireDate} eq null" name="hireDate" id="hireDate" type="text" class="scinput"
+                           onfocus="WdatePicker({skin:'whyGreen',lang:'en'})"/>
+                </a>
+            </li>
+            <a>
+                <input name="" type="submit" class="sure" value="查询"/>
+                <input name="" type="button" class="sure" value="清空" onclick="clearform()"/>
+            </a>
+        </ul>
+    </form>
+    <div class="formtitle1"><span>员工列表</span></div>
+
+    <table class="tablelist">
+        <thead>
+        <tr>
+            <th>
+                <input name="" type="checkbox" value="" checked="checked"/>
+            </th>
+            <th>用户名<i class="sort"><img src="../../static/images/px.gif"/></i></th>
+            <th>真实姓名</th>
+            <th>所属部门</th>
+            <th>所属岗位</th>
+            <th>上级姓名</th>
+            <th>入职时间</th>
+            <th>联系方式</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr th:each="emp:${empList}">
+                <td>
+                    <input name="" type="checkbox" value=""/>
+                </td>
+                <td th:text="${emp.empid }"></td>
+                <td th:text="${emp.realName }"></td>
+                <td th:text="${emp.dept.deptname }"></td>
+                <td th:text="${emp.position.pname }"></td>
+                <td th:text="${emp.mgr.realName }"></td>
+                <td th:text="${emp.hireDate }"></td>
+                <td th:text="${emp.phone }"></td>
+                <td>
+                    <a th:href="@{/EmployeeController/check(empId=${emp.empid })}" class="tablelink">查看</a>
+                    <a th:href="@{/EmployeeController/toUpdate(empId=${emp.empid })}" class="tablelink">修改</a>
+                    <a href="javascript:void(0)" th:onclick="deleteEmp([[${emp.empid}]])" class="tablelink"> 删除</a>
+                    <a href="javascript:void(0)" th:onclick="resetpassword([[${emp.empid}]])" class="tablelink"> 重置密码</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <p th:text="${error}" style="color:red;"></p>
+    <div class="pagin">
+        <div class="message">共<i class="blue" th:text="${pageUtil.rowcount }">1256</i>条记录，当前显示第&nbsp;<i class="blue" th:text="${pageUtil.currnav }">2&nbsp;</i>页</div>
+        <ul class="paginList">
+            <li class="paginItem"><a th:href="@{/EmployeeController/find(currnav=${pageUtil.prev },empId=${empId},deptno=${deptno2},onDuty=${onDuty},hireDate=${hireDate})}"><span class="pagepre"></span></a></li>
+            <li th:each="i: ${#numbers.sequence(pageUtil.begin,pageUtil.end)}" class="paginItem"><a th:text="${i}" th:href="@{/EmployeeController/find(currnav=${i },empId=${empId},deptno=${deptno2},onDuty=${onDuty},hireDate=${hireDate})}"></a></li>
+            <li class="paginItem"><a th:href="@{/EmployeeController/find(currnav=${pageUtil.next },empId=${empId},deptno=${deptno2},onDuty=${onDuty},hireDate=${hireDate})}"><span class="pagenxt"></span></a></li>
+        </ul>
+    </div>
+
+    <div class="tip">
+        <div class="tiptop"><span>提示信息</span>
+            <a></a>
+        </div>
+
+        <div class="tipinfo">
+            <span><img src="../../static/images/ticon.png"/></span>
+            <div class="tipright">
+                <p>是否确认对信息的修改 ？</p>
+                <cite>如果是请点击确定按钮 ，否则请点取消。</cite>
+            </div>
+        </div>
+
+        <div class="tipbtn">
+            <input name="" type="button" class="sure" value="确定"/>&nbsp;
+            <input name="" type="button" class="cancel" value="取消"/>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    $('.tablelist tbody tr:odd').addClass('odd');
+</script>
+
+</body>
+
+</html>

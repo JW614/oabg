@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>无标题文档</title>
+    <link href="../../static/css/style.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="../../static/js/jquery.js"></script>
+    <script type="text/javascript">
+        function toVaild() {
+            if($("#deptnospan").val() != '部门编号可用'){
+                return false;
+            }else{
+                $("#deptnospan").html("");
+            }
+            if($("#dname").val() == '' || $("#dname").val() == null){
+                $("#dnamespan").html("部门名称不能为空");
+                return false;
+            }else{
+                $("#dnamespan").html("");
+            }
+            if($("#location").val() == '' || $("#location").val() == null){
+                $("#locationspan").html("办公地点不能为空");
+                return false;
+            }else{
+                $("#locationspan").html("");
+            }
+        }
+        function jiaoyan() {
+            var deptno = $("#deptno").val();
+            $.ajax({
+                type: "post",
+                url:"/DeptController/find",
+                dataType:"json",
+                data:{"deptno":deptno},
+                success:function(result){
+                    if(result.data == '2'){
+                        if($("#deptno").val() == '' || $("#deptno").val() == null){
+                            $("#deptnospan").html("部门编号不能为空");
+                            $("#deptnospan").val("部门编号不能为空");
+                        }else{
+                            $("#deptnospan").html("部门编号可用");
+                            $("#deptnospan").val("部门编号可用");
+                        }
+                    }else{
+                        $("#deptnospan").html("部门编号不可用");
+                        $("#deptnospan").val("部门编号不可用");
+                    }
+                },
+                error:function (xhr) {
+                    alert(xhr.status);
+                }
+            });
+        }
+    </script>
+</head>
+
+<body>
+
+<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+        <li><a href="#">人事管理</a></li>
+        <li><a href="#">添加部门</a></li>
+    </ul>
+</div>
+
+<div class="formbody">
+
+    <div class="formtitle"><span>基本信息</span></div>
+    <form action="/DeptController/add" method="post" onsubmit="return toVaild()">
+        <ul class="forminfo">
+            <li>
+                <label>部门编号</label>
+                <input id="deptno" name="deptno" type="text" class="dfinput" onblur="jiaoyan()"/>
+                <span id="deptnospan" style="color: red"></span>
+            </li>
+            <li>
+                <label>部门名称</label>
+                <input id="dname" name="dname" type="text" class="dfinput"/>
+                <span id="dnamespan" style="color: red"></span>
+            </li>
+            <li>
+                <label>办公地点</label>
+                <input id="location" name="location" type="text" class="dfinput"/>
+                <span id="locationspan" style="color: red"></span>
+            </li>
+            <li><label>&nbsp;</label><input name="" type="submit" class="btn" value="确认保存"/></li>
+            <li><p th:text="${error }"></p></li>
+        </ul>
+    </form>
+</div>
+
+
+</body>
+
+</html>
